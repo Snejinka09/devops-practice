@@ -1,0 +1,47 @@
+version: '3'
+volumes:
+  prometheus-data:
+  grafana-data:
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: snejinka_pet-prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    networks:
+      - snejinka-my-pet
+    depends_on:
+      - pushgateway
+    restart: unless-stopped
+  pushgateway:
+    image: prom/pushgateway
+    container_name: snejinka_pet-pushgateway
+    networks:
+      - snejinka-my-pet
+    ports:
+      - 9091:9091
+    restart: unless-stopped
+  grafana:
+    image: grafana/grafana
+    container_name: snejinka_pet-grafana
+    volumes:
+      - ./grafana:/etc/grafana
+      - grafana-data:/var/lib/grafana
+    environment:
+      GF_PATHS_CONFIG : /etc/grafana/custom.ini
+    ports: 
+      - 80:3000
+    networks:
+      - snejinka-my-pet
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+networks:
+    snejinka-my-pet:
+      driver: bridge
+      ipam:
+        config:
+         - subnet: 10.5.0.0/16
