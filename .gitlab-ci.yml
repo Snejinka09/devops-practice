@@ -1,0 +1,15 @@
+stages:
+    - validate
+    -  deploy
+
+validate-job:
+  stage: validate
+  image: docker:24-cli
+  script: docker compose config
+
+deploy-job:
+  stage: deploy
+  image: docker:24-cli
+  script: docker compose pull && docker compose up -d
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
