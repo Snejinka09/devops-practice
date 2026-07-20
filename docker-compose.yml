@@ -32,8 +32,8 @@ services:
       - grafana-data:/var/lib/grafana
     environment:
       GF_PATHS_CONFIG : /etc/grafana/custom.ini
-    ports: 
-      - 80:3000
+    ports:
+      - 127.0.0.1:3000:3000
     networks:
       - snejinka-my-pet
     depends_on:
