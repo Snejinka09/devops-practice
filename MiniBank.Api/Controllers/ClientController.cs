@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MiniBank.Core.Entities;
 using MiniBank.Core.Services;
 
 namespace MiniBank.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/clients")]
     public class ClientController : ControllerBase
