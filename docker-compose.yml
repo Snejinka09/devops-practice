@@ -1,4 +1,3 @@
-version: '3'
 volumes:
   prometheus-data:
   grafana-data:
@@ -38,6 +37,15 @@ services:
       - snejinka-my-pet
     depends_on:
       - prometheus
+    restart: unless-stopped
+  minibank-api:
+    build:
+      context: ./app
+    container_name: snejinka_pet-minibank-api
+    ports:
+      - 8080:8080
+    networks:
+      - snejinka-my-pet
     restart: unless-stopped
 networks:
     snejinka-my-pet:
