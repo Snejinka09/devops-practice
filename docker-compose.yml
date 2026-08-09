@@ -30,7 +30,8 @@ services:
       - ./grafana:/etc/grafana
       - grafana-data:/var/lib/grafana
     environment:
-      GF_PATHS_CONFIG : /etc/grafana/custom.ini
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USERNAME}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_USER_PASSWORD}
     ports:
       - 127.0.0.1:3000:3000
     networks:
@@ -47,6 +48,8 @@ services:
     networks:
       - snejinka-my-pet
     restart: unless-stopped
+    environment:
+      - Jwt__Key=${JWT_KEY}
 networks:
     snejinka-my-pet:
       driver: bridge
