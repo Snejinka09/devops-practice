@@ -6,7 +6,7 @@ services:
     image: prom/prometheus
     container_name: snejinka_pet-prometheus
     ports:
-      - 9090:9090
+      -  127.0.0.1:9090:9090
     volumes:
       - ./prometheus:/etc/prometheus
       - prometheus-data:/prometheus
@@ -21,7 +21,7 @@ services:
     networks:
       - snejinka-my-pet
     ports:
-      - 9091:9091
+      - 127.0.0.1:9091:9091
     restart: unless-stopped
   grafana:
     image: grafana/grafana
