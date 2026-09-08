@@ -13,5 +13,6 @@ namespace MiniBank.Core.Entities
         public string Login { get; set; }
         public string PasswordHash { get; set; }
         public UserRole Role { get; set; }
+        public int? ClientId { get; set; }
     }
 }

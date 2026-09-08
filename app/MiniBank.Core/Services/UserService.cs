@@ -16,9 +16,9 @@ namespace MiniBank.Core.Services
         {
             _userRepository = userRepository;
         }
-        public void Register(string login, string password)
+        public void Register(string login, string password, int? clientId)
         {
-            var user = new User { Login = login };
+            var user = new User { Login = login, ClientId = clientId };
             user.PasswordHash = new PasswordHasher<User>().HashPassword(user, password);
             _userRepository.AddUser(user);
         }

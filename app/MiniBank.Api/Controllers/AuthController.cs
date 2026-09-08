@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MiniBank.Api.Service;
 using MiniBank.Core.Entities;
 using MiniBank.Core.Services;
+using MiniBank.Api.Dto;
 
 namespace MiniBank.Api.Controllers
 {
@@ -19,15 +19,15 @@ namespace MiniBank.Api.Controllers
         }
 
         [HttpPost("register")]
-        public void Register(string login, string password)
+        public void Register([FromBody] RegisterRequest request)
         {
-            _userService.Register(login, password);
+            _userService.Register(request.Login, request.Password, request.ClientId);
         }
 
         [HttpPost("login")]
-        public IActionResult Login(string login, string password)
+        public IActionResult Login([FromBody] LoginRequest request)
         {
-            var user = _userService.Login(login, password);
+            var user = _userService.Login(request.Login, request.Password);
             if (user == null)
             {
                 return Unauthorized();

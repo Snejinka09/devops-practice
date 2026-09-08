@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MiniBank.Core.Entities;
 using MiniBank.Core.Services;
+using System.Linq;
+using System.Security.Principal;
 
 namespace MiniBank.Api.Controllers
 {
@@ -19,30 +21,82 @@ namespace MiniBank.Api.Controllers
         [HttpGet]
         public List<Client> GetAllClients()
         {
-            return _clientService.GetAllClients();
+            var all = _clientService.GetAllClients();
+            if (IsAdmin())
+            {
+                return all;
+            }
+            return all.Where(x => x.Id == GetCurrentClientId()).ToList();
         }
+
         [HttpGet("{id}")]
-        public Client GetById(int Id)
+        public IActionResult GetById(int id)
         {
-            return _clientService.GetById(Id);
+            var person = _clientService.GetById(id);
+            if (person == null)
+            {
+                return NotFound();
+            }
+            else if (!IsAdmin() && person.Id != GetCurrentClientId())
+            {
+                return Forbid();
+            }
+            else
+            {
+                return Ok(person);
+            }
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public void AddClient(Client client)
         {
             _clientService.AddClient(client);
         }
 
         [HttpPut]
-        public void UpdateClient(Client client)
+        public IActionResult UpdateClient(Client client)
         {
-            _clientService.UpdateClient(client);
+            var existing = _clientService.GetById(client.Id);
+            if (existing == null)
+            {
+                return NotFound();
+            }
+            else if (!IsAdmin() && existing.Id != GetCurrentClientId())
+            {
+                return Forbid();
+            }
+            else
+            {
+                _clientService.UpdateClient(client);
+                return Ok();
+            }
         }
 
         [HttpDelete("{id}")]
-        public void DeleteClient(int Id)
+        public IActionResult DeleteClient(int Id)
         {
+            var existing = _clientService.GetById(Id);
+            if (existing == null)
+            {
+                return NotFound();
+            }
+            else if (!IsAdmin() && existing.Id != GetCurrentClientId())
+            {
+                return Forbid();
+            }
             _clientService.DeleteClient(Id);
+            return Ok();
+        }
+        private int? GetCurrentClientId()
+        {
+            var claim = User.FindFirst("ClientId")?.Value;
+            return string.IsNullOrEmpty(claim) ? null : int.Parse(claim);
+        }
+
+        private bool IsAdmin()
+        {
+            return User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value == "Admin";
         }
     }
 }
